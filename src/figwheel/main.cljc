@@ -1230,7 +1230,8 @@ classpath. Classpath-relative paths have prefix of @ or @/")
           (.getCanonicalPath (io/file output-dir))))
 
      (defn validate-output-paths-relationship! [{:keys [options] :as cfg}]
-       (if (= :bundle (:target options))
+       (if (and (= :bundle (:target options))
+                (not (:modules options)))
          (do (when-not (output-to-inside-output-dir? options)
                (throw (ex-info (str "[Config Error] When using the :bundle target the :output-to file needs to be inside\nthe directory specified by :output-dir"
                                     "\n :output-to "  (:output-to options)
@@ -1275,13 +1276,18 @@ I.E. {:closure-defines {cljs.core/*global* \"window\" ...}}"))
              fname (subs fname 0 (- (count fname) (inc (count ext))))]
          (.getPath (io/file (.getParent ^java.io.File f) (str fname to-append "." ext)))))
 
-     (defn- config-default-final-output-to [{:keys [options ::config] :as cfg}]
+     (defn- config-default-final-output-to
+       [{:as cfg,
+         {:keys [final-output-to]} ::config,
+         {:keys [output-to target bundle-cmd]} :options}]
        (cond-> cfg
-         (nil? (:final-output-to config))
+         (nil? final-output-to)
          (assoc-in [::config :final-output-to]
-                   (if (= :bundle (:target options))
-                     (append-to-filename-before-ext (:output-to options) "_bundle")
-                     (:output-to options)))))
+                   (if (and (= :bundle target)
+                            (some? bundle-cmd)
+                            output-to)
+                     (append-to-filename-before-ext output-to "_bundle")
+                     output-to))))
 
      (defn figure-default-asset-path [{:keys [figwheel-options options ::config ::build] :as cfg}]
        (if (= :nodejs (:target options))

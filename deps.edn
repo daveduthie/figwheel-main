@@ -5,7 +5,8 @@
         ;; com.bhauman/figwheel-core {:local/root "/Users/bhauman/workspace/figwheel/figwheel-core"}
         ;; com.bhauman/figwheel-repl {:local/root "/Users/bhauman/workspace/figwheel/figwheel-repl"}
         com.bhauman/figwheel-repl {:mvn/version "0.2.15"}
-        com.bhauman/figwheel-core {:mvn/version "0.2.15"}
+        com.bhauman/figwheel-core {:git/url "https://github.com/bhauman/figwheel-core"
+                                   :sha "323b61c7c3012b29ca230d10de958fa26453f9eb"}
 
         ;; server
         ring/ring {:mvn/version "1.9.1"}
